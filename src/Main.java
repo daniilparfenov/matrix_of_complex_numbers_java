@@ -15,16 +15,22 @@ public class Main {
         System.out.println("Multiply: " + multiplied);
         System.out.println("Divide: " + divided);
 
-        Matrix m1 = new Matrix(2,2);
+        Matrix m1 = new Matrix(2, 2);
         m1.randomFill(10);
         m1.print();
         System.out.println();
-        Matrix m2 = new Matrix(2, 2);
+        Matrix m2 = new Matrix(2, 4);
         m2.randomFill(10);
         m2.print();
 
-        System.out.println("Multiplying:");
-        Matrix res = m1.multiply(m2);
-        res.print();
+//        System.out.println("Multiplying:");
+//        Matrix res = m1.multiply(m2);
+//        res.print();
+        System.out.println("DETERMINANT:");
+        Matrix m3 = new Matrix(4, 4);
+        m3.setElement(new ComplexNumber(1,1), 0,0);
+        m3.randomFill(10);
+        m3.print();
+        System.out.println(m3.getDeterminant());
     }
 }

@@ -1,23 +1,23 @@
 import java.util.Random;
 
 public class Matrix {
-    private ComplexNumber matrix[][];
+    private ComplexNumber[][] mat;
     private int rows, columns;
 
     Matrix() {
-        matrix = new ComplexNumber[1][1];
+        mat = new ComplexNumber[1][1];
         rows = 1;
         columns = 1;
-        matrix[0][0] = new ComplexNumber();
+        mat[0][0] = new ComplexNumber();
     }
 
     Matrix(int rows, int columns) {
-        matrix = new ComplexNumber[rows][columns];
+        mat = new ComplexNumber[rows][columns];
         this.rows = rows;
         this.columns = columns;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                matrix[i][j] = new ComplexNumber();
+                mat[i][j] = new ComplexNumber();
             }
         }
     }
@@ -25,7 +25,7 @@ public class Matrix {
     public void print() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                System.out.print(matrix[i][j] + " ");
+                System.out.print(mat[i][j] + " ");
             }
             System.out.println();
         }
@@ -33,7 +33,7 @@ public class Matrix {
 
     public void setElement(ComplexNumber num, int row, int column) {
         if (row >= 0 && row < rows && column >= 0 && column < columns) {
-            matrix[row][column] = num;
+            mat[row][column] = num;
         } else {
             System.out.println("Invalid index (ㆆ_ㆆ)");
         }
@@ -41,7 +41,7 @@ public class Matrix {
 
     public ComplexNumber getElement(int row, int column) {
         if (row >= 0 && row < rows && column >= 0 && column < columns) {
-            return matrix[row][column];
+            return mat[row][column];
         } else {
             System.out.println("Invalid index (ㆆ_ㆆ)");
             return new ComplexNumber();
@@ -52,8 +52,8 @@ public class Matrix {
         Random randomizer = new Random();
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                matrix[i][j].setRealPart(randomizer.nextDouble(mod));
-                matrix[i][j].setImaginaryPart(randomizer.nextDouble(mod));
+                mat[i][j].setRealPart(randomizer.nextDouble(mod));
+                mat[i][j].setImaginaryPart(randomizer.nextDouble(mod));
             }
         }
     }
@@ -62,61 +62,91 @@ public class Matrix {
         Random randomizer = new Random();
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                matrix[i][j].setRealPart(randomizer.nextInt(mod));
-                matrix[i][j].setImaginaryPart(randomizer.nextInt(mod));
+                mat[i][j].setRealPart(randomizer.nextInt(mod));
+                mat[i][j].setImaginaryPart(randomizer.nextInt(mod));
             }
         }
     }
 
     public Matrix add(Matrix otherMatrix) {
-        int rows = this.rows, columns = otherMatrix.columns;
         Matrix result = new Matrix(rows, columns);
 
-        if (this.rows != otherMatrix.rows || this.columns != otherMatrix.columns) {
+        if (rows != otherMatrix.rows || columns != otherMatrix.columns) {
             System.out.println("Incompatible matrices for addition ＞﹏＜");
             return result;
         }
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                result.matrix[i][j] = this.matrix[i][j].add(otherMatrix.matrix[i][j]);
+                result.mat[i][j] = this.mat[i][j].add(otherMatrix.mat[i][j]);
             }
         }
         return result;
     }
 
+    // CHEEEEEEEEEEEEEEEEEEEEEECK
     public Matrix subtract(Matrix otherMatrix) {
         Matrix result = new Matrix(rows, columns);
 
-        if (this.rows != otherMatrix.rows || this.columns != otherMatrix.columns) {
+        if (rows != otherMatrix.rows || columns != otherMatrix.columns) {
             System.out.println("Incompatible matrices for subtracting ＞﹏＜");
-            return result;
+            throw new IllegalArgumentException("Incompatible matrices for multiplying ＞﹏＜");
         }
-
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < otherMatrix.columns; j++) {
-                result.matrix[i][j] = this.matrix[i][j].subtract(otherMatrix.matrix[i][j]);
+                result.mat[i][j] = this.mat[i][j].subtract(otherMatrix.mat[i][j]);
             }
         }
         return result;
     }
 
     public Matrix multiply(Matrix otherMatrix) {
-        Matrix result = new Matrix(this.rows, otherMatrix.columns);
         if (this.columns != otherMatrix.rows) {
-            System.out.println("Incompatible matrices for multiplying ＞﹏＜");
-            return result;
+            throw new IllegalArgumentException("Incompatible matrices for multiplying ＞﹏＜");
         }
 
+        Matrix result = new Matrix(this.rows, otherMatrix.columns);
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < otherMatrix.columns; j++) {
                 for (int k = 0; k < this.columns; k++) {
-                    result.matrix[i][j] = result.matrix[i][j].add(this.matrix[i][k].multiply(otherMatrix.matrix[k][j]));
+                    result.mat[i][j] = result.mat[i][j].add(this.mat[i][k].multiply(otherMatrix.mat[k][j]));
                 }
             }
         }
-
         return result;
+    }
+
+    public ComplexNumber getDeterminant() {
+        if (rows != columns) {
+            throw new IllegalArgumentException("Incompatible matrix for determinant calculating ＞﹏＜");
+        }
+        if (rows == 1) {
+            return mat[0][0];
+        }
+        if (rows == 2) {
+            return (mat[0][0].multiply(mat[1][1])).subtract((mat[0][1].multiply(mat[1][0])));
+        }
+
+        ComplexNumber det = new ComplexNumber(0, 0);
+        for (int i = 0; i < rows; i++) {
+            Matrix minor = new Matrix(rows - 1, columns - 1);
+            for (int j = 1; j < rows; j++) {
+                int col = 0;
+                for (int k = 0; k < rows; k++) {
+                    if (k != i) {
+                        minor.mat[j - 1][col] = mat[j][k];
+                        col++;
+                    }
+                }
+            }
+            ComplexNumber minorDet = minor.getDeterminant();
+            if (i % 2 != 0) {
+                det = det.add(minorDet.multiply(new ComplexNumber(-1, 0)).multiply(mat[0][i]));
+            } else {
+                det = det.add(minorDet.multiply(mat[0][i]));
+            }
+        }
+        return det;
     }
 
 
