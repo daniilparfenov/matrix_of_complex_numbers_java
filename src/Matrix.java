@@ -1,20 +1,25 @@
 import java.util.Random;
 
 public class Matrix {
+    // Поля
     private ComplexNumber[][] mat;
     private int rows, columns;
 
-    Matrix(int rows, int columns) {
+    // Конструктор. Создает матрицу размера rows x columns, заполненную нулями
+    public Matrix(int rows, int columns) {
         mat = new ComplexNumber[rows][columns];
         this.rows = rows;
         this.columns = columns;
+
+        // Инициализациями нулями
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                mat[i][j] = new ComplexNumber();
+                mat[i][j] = new ComplexNumber(0, 0);
             }
         }
     }
 
+    // Setter
     public void setElement(ComplexNumber num, int row, int column) {
         if (row >= 0 && row < rows && column >= 0 && column < columns) {
             mat[row][column] = num;
@@ -23,6 +28,7 @@ public class Matrix {
         }
     }
 
+    // Getters
     public ComplexNumber getElement(int row, int column) {
         if (row >= 0 && row < rows && column >= 0 && column < columns) {
             return mat[row][column];
@@ -32,6 +38,18 @@ public class Matrix {
         }
     }
 
+    public int getRowsNumber() {
+        return rows;
+    }
+
+    public int getColumnsNumber() {
+        return columns;
+    }
+
+
+    // Методы
+
+    // Заполняет матрицу рандомными значениями от 0 до mod
     public void randomFill(double mod) {
         Random randomizer = new Random();
         for (int i = 0; i < rows; i++) {
@@ -41,7 +59,6 @@ public class Matrix {
             }
         }
     }
-
     public void randomFill(int mod) {
         Random randomizer = new Random();
         for (int i = 0; i < rows; i++) {
@@ -52,6 +69,7 @@ public class Matrix {
         }
     }
 
+    // Складывает две матрицы
     public Matrix add(Matrix otherMatrix) {
         Matrix result = new Matrix(rows, columns);
 
@@ -68,7 +86,7 @@ public class Matrix {
         return result;
     }
 
-    // CHEEEEEEEEEEEEEEEEEEEEEECK
+    // Вычитает две матрицы
     public Matrix subtract(Matrix otherMatrix) {
         Matrix result = new Matrix(rows, columns);
 
@@ -83,6 +101,7 @@ public class Matrix {
         return result;
     }
 
+    // Умножает две матрицы
     public Matrix multiply(Matrix otherMatrix) {
         if (this.columns != otherMatrix.rows) {
             throw new IllegalArgumentException("Incompatible matrices for multiplying ＞﹏＜");
@@ -99,6 +118,7 @@ public class Matrix {
         return result;
     }
 
+    // Возвращает определитель квадратной матрицы
     public ComplexNumber getDeterminant() {
         if (rows != columns) {
             throw new IllegalArgumentException("Incompatible matrix for determinant calculating ＞﹏＜");
@@ -114,6 +134,7 @@ public class Matrix {
         return det;
     }
 
+    // Возвращает алгебраическое дополнение к элементу i строки, j столбца матрицы
     private ComplexNumber getCofactor(int i, int j) {
         Matrix minor = new Matrix(rows - 1, columns - 1);
         int minorRow = 0, minorCol = 0;
@@ -130,6 +151,7 @@ public class Matrix {
         return (i + j) % 2 == 0 ? minor.getDeterminant() : minor.getDeterminant().multiply(new ComplexNumber(-1, 0));
     }
 
+    // Возвращает транспонированную матрицу
     public Matrix transpose() {
         Matrix transposedMat = new Matrix(columns, rows);
 
@@ -141,6 +163,7 @@ public class Matrix {
         return transposedMat;
     }
 
+    // Возвращает транспонированную матрицу алгебраических дополнений всех элементов заданной матрицы
     private Matrix getAdjugate() {
         Matrix adjudicateMat = new Matrix(rows, columns);
 
@@ -152,6 +175,7 @@ public class Matrix {
         return adjudicateMat.transpose();
     }
 
+    // Умножает матрицу на число
     public Matrix multiplyByScalar(ComplexNumber scalar) {
         Matrix multipliedMat = new Matrix(rows, columns);
         for (int i = 0; i < rows; i++) {
@@ -162,6 +186,7 @@ public class Matrix {
         return multipliedMat;
     }
 
+    // Возвращает обратную матрицу
     public Matrix getInverse() {
         ComplexNumber det = getDeterminant();
         if (det.getRealPart() == 0 && det.getImaginaryPart() == 0) {
@@ -170,6 +195,15 @@ public class Matrix {
         return getAdjugate().multiplyByScalar(new ComplexNumber(1, 0).divide(det));
     }
 
+    public Matrix divide(Matrix otherMat) {
+        if ((columns != otherMat.columns) || (otherMat.columns != otherMat.rows)) {
+            throw new IllegalArgumentException("Incompatible matrices for dividing ＞﹏＜");
+        }
+
+        return this.multiply(otherMat.getInverse());
+    }
+
+    // Переопределение метода toString для вывода матрицы
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -185,7 +219,7 @@ public class Matrix {
         for (int row = 0; row < rows; row++) {
             sb.append('[');
             for (int col = 0; col < columns; col++) {
-                sb.append(String.format("%" + (maxLength) + "s", mat[row][col]));
+                sb.append(String.format("%" + maxLength + "s", mat[row][col].toString()));
                 if (col != columns - 1) {
                     sb.append(", ");
                 }

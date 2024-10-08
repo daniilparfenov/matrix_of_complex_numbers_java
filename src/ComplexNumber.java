@@ -4,31 +4,39 @@ public class ComplexNumber {
     private double real;
     private double img;
 
-    ComplexNumber() {
+    public ComplexNumber() {
         real = 0;
         img = 0;
     }
 
-    ComplexNumber(double real, double img) {
+    public ComplexNumber(double real, double img) {
         this.real = real;
         this.img = img;
     }
 
     @Override
     public String toString() {
-        if (real == 0 && img == 0) {
+        String realStr = real % 1 == 0 ? String.format("%d", (long) real) : String.format("%.3f", real);
+        String imgStr = img % 1 == 0 ? String.format("%d", (long) img) : String.format("%.3f", img);
+
+        if (realStr.contains(",000")) {
+            realStr = realStr.substring(0, realStr.indexOf(','));
+        }
+        if (imgStr.contains(",000")) {
+            imgStr = imgStr.substring(0, imgStr.indexOf(','));
+        }
+
+        if ((realStr.equals("0") || realStr.equals("-0") && (imgStr.equals("0") || imgStr.equals("-0")))) {
             return "0";
         }
-        String realStr = real % 1 == 0 ? String.format("%d", (long) real) : String.format("%.2f", real);
-        String imgStr = img % 1 == 0 ? String.format("%d", (long) img) : String.format("%.2f", img);
-        if (real == 0) {
-            return img == 1 ? "i" : String.format("%si", imgStr);
+        if (realStr.equals("0") || realStr.equals("-0")) {
+            return imgStr.equals("1") ? "i" : String.format("%si", imgStr);
         }
-        if (img == 0) {
+        if (imgStr.equals("0") || imgStr.equals("-0")) {
             return realStr;
         }
-        if (img == 1) return String.format("%s+i", realStr);
-        if (img == -1) return String.format("%s-i", realStr);
+        if (imgStr.equals("1")) return String.format("%s+i", realStr);
+        if (imgStr.equals("-1")) return String.format("%s-i", realStr);
         return img > 0 ? String.format("%s+%si", realStr, imgStr) : String.format("%s%si", realStr, imgStr);
     }
 

@@ -15,9 +15,9 @@ public class Main {
 //        System.out.println("Multiply: " + multiplied);
 //        System.out.println("Divide: " + divided);
 //
-        Matrix m1 = new Matrix(3, 4);
-        m1.randomFill(10);
-        System.out.println(m1);
+//        Matrix m1 = new Matrix(3, 4);
+//        m1.randomFill(10);
+//        System.out.println(m1);
 //        System.out.println();
 //        Matrix m2 = new Matrix(2, 4);
 //        m2.randomFill(10);
@@ -27,9 +27,9 @@ public class Main {
 //        Matrix res = m1.multiply(m2);
 //        res.print();
 //        System.out.println("DETERMINANT:");
-//        Matrix m3 = new Matrix(3, 3);
+        Matrix m3 = new Matrix(3, 3);
 //        m3.setElement(new ComplexNumber(1,1), 0,0);
-//        m3.randomFill(10);
+        m3.randomFill(10);
 //        m3.print();
 //        System.out.println(m3.getDeterminant());
 //        System.out.println("transposed ");
@@ -38,6 +38,15 @@ public class Main {
 //        m3.print();
 //        m3.getInverse().print();
 //        m3.multiply(m3.getInverse()).print();
+
+        Matrix m4 = new Matrix(3,3);
+        m4.randomFill(10);
+        m4.setElement(new ComplexNumber(1.00,0.00),0,0);
+//        System.out.println(m4 + "\n");
+        System.out.println(m4);
+        System.out.println(m3.getInverse());
+        Matrix o = m4.divide(m3);
+        System.out.println(o);
 
     }
 }
