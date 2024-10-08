@@ -24,7 +24,7 @@ public class Matrix {
         if (row >= 0 && row < rows && column >= 0 && column < columns) {
             mat[row][column] = num;
         } else {
-            System.out.println("Invalid index (ㆆ_ㆆ)");
+            throw new IllegalArgumentException("Invalid element indexes (ㆆ_ㆆ)");
         }
     }
 
@@ -33,8 +33,7 @@ public class Matrix {
         if (row >= 0 && row < rows && column >= 0 && column < columns) {
             return mat[row][column];
         } else {
-            System.out.println("Invalid index (ㆆ_ㆆ)");
-            return new ComplexNumber();
+            throw new IllegalArgumentException("Invalid element indexes (ㆆ_ㆆ)");
         }
     }
 
@@ -47,10 +46,10 @@ public class Matrix {
     }
 
 
-    // Методы
+    // Methods
 
-    // Заполняет матрицу рандомными значениями от 0 до mod
-    public void randomFill(double mod) {
+    // Заполняет матрицу случайными вещественными значениями от 0 до mod
+    public void randomDoubleFill(double mod) {
         Random randomizer = new Random();
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -59,7 +58,9 @@ public class Matrix {
             }
         }
     }
-    public void randomFill(int mod) {
+
+    // Заполняет матрицу случайными целыми значениями от 0 до mod
+    public void randomIntFill(int mod) {
         Random randomizer = new Random();
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -71,13 +72,13 @@ public class Matrix {
 
     // Складывает две матрицы
     public Matrix add(Matrix otherMatrix) {
-        Matrix result = new Matrix(rows, columns);
-
+        // Проверка на неравенство размеров операндов
         if (rows != otherMatrix.rows || columns != otherMatrix.columns) {
-            System.out.println("Incompatible matrices for addition ＞﹏＜");
-            return result;
+            throw new IllegalArgumentException("Incompatible matrices for addition ＞﹏＜");
         }
 
+        // Поэлементное сложение матриц
+        Matrix result = new Matrix(rows, columns);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 result.mat[i][j] = this.mat[i][j].add(otherMatrix.mat[i][j]);
@@ -88,11 +89,13 @@ public class Matrix {
 
     // Вычитает две матрицы
     public Matrix subtract(Matrix otherMatrix) {
-        Matrix result = new Matrix(rows, columns);
-
+        // Проверка на неравенство размеров операндов
         if (rows != otherMatrix.rows || columns != otherMatrix.columns) {
-            throw new IllegalArgumentException("Incompatible matrices for multiplying ＞﹏＜");
+            throw new IllegalArgumentException("Incompatible matrices for subtraction ＞﹏＜");
         }
+
+        // Поэлементное вычитание матриц
+        Matrix result = new Matrix(rows, columns);
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < otherMatrix.columns; j++) {
                 result.mat[i][j] = this.mat[i][j].subtract(otherMatrix.mat[i][j]);
@@ -103,6 +106,7 @@ public class Matrix {
 
     // Умножает две матрицы
     public Matrix multiply(Matrix otherMatrix) {
+        // Для умножения количество строк первого операнда должно равняться количеству строк второго
         if (this.columns != otherMatrix.rows) {
             throw new IllegalArgumentException("Incompatible matrices for multiplying ＞﹏＜");
         }
@@ -118,16 +122,20 @@ public class Matrix {
         return result;
     }
 
-    // Возвращает определитель квадратной матрицы
+    // Возвращает определитель квадратной матрицы. Вычисляется рекурсивно (косвенная рекурсия с getCofactor)
     public ComplexNumber getDeterminant() {
+        // Проверка, что матрица квадратная
         if (rows != columns) {
             throw new IllegalArgumentException("Incompatible matrix for determinant calculating ＞﹏＜");
         }
+        // Базовый случай рекурсии
         if (rows == 1) {
             return mat[0][0];
         }
 
         ComplexNumber det = new ComplexNumber(0, 0);
+        /* Вычисляется детерминант путем разложения по первому столбцу. Его элементы домножаются на соответствующие
+           алгебраические дополнения. Результат складывается */
         for (int row = 0; row < rows; row++) {
             det = det.add(getCofactor(row, 0).multiply(mat[row][0]));
         }
@@ -136,6 +144,7 @@ public class Matrix {
 
     // Возвращает алгебраическое дополнение к элементу i строки, j столбца матрицы
     private ComplexNumber getCofactor(int i, int j) {
+        // Заполнение минора
         Matrix minor = new Matrix(rows - 1, columns - 1);
         int minorRow = 0, minorCol = 0;
         for (int row = 0; row < rows; row++) {
@@ -148,13 +157,14 @@ public class Matrix {
             minorRow++;
             minorCol = 0;
         }
+        /* Если сумма индексов элемента, для которого считаем алг. дополнение, нечетна,
+           домножаем определитель минора на -1 */
         return (i + j) % 2 == 0 ? minor.getDeterminant() : minor.getDeterminant().multiply(new ComplexNumber(-1, 0));
     }
 
     // Возвращает транспонированную матрицу
     public Matrix transpose() {
         Matrix transposedMat = new Matrix(columns, rows);
-
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 transposedMat.mat[j][i] = mat[i][j];
@@ -165,8 +175,8 @@ public class Matrix {
 
     // Возвращает транспонированную матрицу алгебраических дополнений всех элементов заданной матрицы
     private Matrix getAdjugate() {
+        // Заполнение матрицы алгебраическими дополнениями к соответствующим элементам
         Matrix adjudicateMat = new Matrix(rows, columns);
-
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 adjudicateMat.mat[i][j] = getCofactor(i, j);
@@ -175,7 +185,7 @@ public class Matrix {
         return adjudicateMat.transpose();
     }
 
-    // Умножает матрицу на число
+    // Умножает матрицу на число (скаляр)
     public Matrix multiplyByScalar(ComplexNumber scalar) {
         Matrix multipliedMat = new Matrix(rows, columns);
         for (int i = 0; i < rows; i++) {
@@ -189,14 +199,18 @@ public class Matrix {
     // Возвращает обратную матрицу
     public Matrix getInverse() {
         ComplexNumber det = getDeterminant();
+        // Проверка, что обратная матрица существует (определитель != 0)
         if (det.getRealPart() == 0 && det.getImaginaryPart() == 0) {
             throw new IllegalArgumentException("Incompatible matrix for inverse calculating ＞﹏＜");
         }
+        // Возвращает транспонированную матрицу алгебраических дополнений деленную на детерминант
         return getAdjugate().multiplyByScalar(new ComplexNumber(1, 0).divide(det));
     }
 
     public Matrix divide(Matrix otherMat) {
-        if ((columns != otherMat.columns) || (otherMat.columns != otherMat.rows)) {
+        // Проверка, что деление возможно
+        if ((columns != otherMat.columns) || (otherMat.columns != otherMat.rows) ||
+                otherMat.getDeterminant().equals(new ComplexNumber(0, 0))) {
             throw new IllegalArgumentException("Incompatible matrices for dividing ＞﹏＜");
         }
 
@@ -206,8 +220,10 @@ public class Matrix {
     // Переопределение метода toString для вывода матрицы
     @Override
     public String toString() {
+        // StringBuilder для эффективной работы со строками (не создает при каждой конкатенации новую строку)
         StringBuilder sb = new StringBuilder();
 
+        // Поиск максимальной длины элементов матрицы (нужна для ровного вывода матрицы)
         int maxLength = -1;
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
@@ -216,10 +232,11 @@ public class Matrix {
                 }
             }
         }
+        // Создание строкового представления матрицы через StringBuilder
         for (int row = 0; row < rows; row++) {
             sb.append('[');
             for (int col = 0; col < columns; col++) {
-                sb.append(String.format("%" + maxLength + "s", mat[row][col].toString()));
+                sb.append(String.format("%" + maxLength + "s", mat[row][col].toString())); // Ровный вывод элемента
                 if (col != columns - 1) {
                     sb.append(", ");
                 }
