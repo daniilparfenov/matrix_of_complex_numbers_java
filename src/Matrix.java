@@ -4,13 +4,6 @@ public class Matrix {
     private ComplexNumber[][] mat;
     private int rows, columns;
 
-    Matrix() {
-        mat = new ComplexNumber[1][1];
-        rows = 1;
-        columns = 1;
-        mat[0][0] = new ComplexNumber();
-    }
-
     Matrix(int rows, int columns) {
         mat = new ComplexNumber[rows][columns];
         this.rows = rows;
@@ -19,15 +12,6 @@ public class Matrix {
             for (int j = 0; j < columns; j++) {
                 mat[i][j] = new ComplexNumber();
             }
-        }
-    }
-
-    public void print() {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                System.out.print(mat[i][j] + " ");
-            }
-            System.out.println();
         }
     }
 
@@ -184,6 +168,31 @@ public class Matrix {
             throw new IllegalArgumentException("Incompatible matrix for inverse calculating ＞﹏＜");
         }
         return getAdjugate().multiplyByScalar(new ComplexNumber(1, 0).divide(det));
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        int maxLength = -1;
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                if (mat[row][col].toString().length() > maxLength) {
+                    maxLength = mat[row][col].toString().length();
+                }
+            }
+        }
+        for (int row = 0; row < rows; row++) {
+            sb.append('[');
+            for (int col = 0; col < columns; col++) {
+                sb.append(String.format("%" + (maxLength) + "s", mat[row][col]));
+                if (col != columns - 1) {
+                    sb.append(", ");
+                }
+            }
+            sb.append("]\n");
+        }
+        return sb.toString();
     }
 }
 
