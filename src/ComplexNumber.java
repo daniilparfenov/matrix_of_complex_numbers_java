@@ -60,4 +60,6 @@ public class ComplexNumber {
         result.imaginaryPart = (this.imaginaryPart * divider.realPart - this.realPart * divider.imaginaryPart) / divisionCoefficient;
         return result;
     }
+
+
 }
