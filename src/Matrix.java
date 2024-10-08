@@ -19,6 +19,13 @@ public class Matrix {
         }
     }
 
+    // Конструктор для создания матрицы из двумерного массива комплексных чисел
+    public Matrix(ComplexNumber arr[][]) {
+        rows = arr.length;
+        columns = arr[0].length;
+        mat = arr.clone();
+    }
+
     // Setter
     public void setElement(ComplexNumber num, int row, int column) {
         if (row >= 0 && row < rows && column >= 0 && column < columns) {
